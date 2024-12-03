@@ -1,22 +1,36 @@
 pipeline{
     agent any
-    environment {
-        CONTENEDOR = 'mi-contenedor-practica'
-        IMAGEN = 'mi-imagen-practica'
+    environment{
+        CONTENEDOR = 'mi-contenedor-Prueba'
+        IMAGEN = 'mi-imagen-prueba'
     }
     stages{
-        stage('Preparar Entorno Docker '){
-            sh "docker stop ${env.CONTENEDOR} || true"
-            sh "docker rm ${env.CONTENEDOR} || true"
+        stage('Preparar Entorno Docker'){
+            steps{
+                sh "docker stop ${env.CONTENEDOR} || true"
+                sh "docker rm ${env.CONTENEDOR} || true"
+            }
         }
-        stage('Clonar repositorio'){
-
+        stage('Clonar Repositorio'){
+            steps{
+                script{
+                    git 'https://github.com/ANavas07/jenkins.git'
+                }
+            }
         }
-        stage('Construir imagen Docker'){
-
+        stage('Construir Imagen'){
+            steps{
+                script{
+                    sh "docker build -t ${env.IMAGEN} ."
+                }
+            }
         }
-        stage('Desplegar en docker'){
-
+        stage('Desplegar Docker'){
+            steps{
+                script{
+                    sh "docker run -d -p 8103:80 --name ${env.CONTENEDOR} ${env.IMAGEN}"
+                }
+            }
         }
     }
 }
